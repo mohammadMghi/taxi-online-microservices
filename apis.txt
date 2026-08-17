@@ -1,0 +1,9 @@
+curl -X POST http://localhost:8080/api/v1/auth/signup   -H "Content-Type: application/json"   -d '{"name": "Mohammad","email": "mohammad@example.com","password": "password123","password_confirmation": "password123"}'
+
+curl -X POST http://localhost:8080/api/v1/auth/signin   -H "Content-Type: application/json"   -d '{"email": "mohammad@example.com","password": "password123"}'
+
+
+curl -X POST "http://localhost:8080/api/v1/locations/validation" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg2OTYyNDkyLCJleHAiOjE3ODY5NjYwOTIsIm5iZiI6MTc4Njk2MjQ5MiwianRpIjoibkFCbDhxaWNJZEE0cTNITCIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.lD3DaoKtxTjrUzHZ-Ibb9MpTMstnHjuaZ1EZGTN6HAs" \
+  -d '{"lat":2,"long":4}'
