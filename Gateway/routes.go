@@ -1,7 +1,7 @@
 // routes.go
 package main
 
-import (
+import ( 
 	"net/http"
 	"strings"
 
@@ -29,6 +29,7 @@ func NewRoutes(config Config) *Routes {
 		paymentProxy:      NewProxy(config.PaymentServiceURL),
 	}
 }
+
 
 func (r *Routes) Handler() http.Handler {
 	mux := http.NewServeMux()
@@ -71,7 +72,7 @@ func (r *Routes) Handler() http.Handler {
 }
 
 type Claims struct {
-	UserID string `json:"user_id"`
+	UserID string `json:"sub"`
 	Role   string `json:"role"`
 
 	jwt.RegisteredClaims
@@ -101,7 +102,7 @@ func AuthMiddleware(secret string, next http.Handler) http.Handler {
 		*/
 		r.Header.Del("X-User-ID")
 		r.Header.Del("X-User-Role")
-
+	 
 		r.Header.Set("X-User-ID", claims.UserID)
 		r.Header.Set("X-User-Role", claims.Role)
 
@@ -138,7 +139,7 @@ func validateJWT(tokenString string, secret string) (*Claims, error) {
 	if err != nil {
 		return nil, err
 	}
-
+ 
 	claims, ok := token.Claims.(*Claims)
 
 	if !ok || !token.Valid {

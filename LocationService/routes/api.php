@@ -9,3 +9,4 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/v1/locations/validation', [App\Http\Controllers\LocationController::class, 'handle']);
+Route::post('/v1/locations/driver_current', [App\Http\Controllers\UpdateDriverLocationController::class, 'updateLocation']);
