@@ -3,12 +3,16 @@ curl -X POST http://localhost:8080/api/v1/auth/signup   -H "Content-Type: applic
 curl -X POST http://localhost:8080/api/v1/auth/signin   -H "Content-Type: application/json"   -d '{"email": "mohammad@example.com","password": "password123"}'
 
 
+
+
 curl -X POST "http://localhost:8080/api/v1/locations/validation" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg3NTkxMjc2LCJleHAiOjE3ODc1OTQ4NzYsIm5iZiI6MTc4NzU5MTI3NiwianRpIjoiYVpsYWdYbmlVME9QeU05cyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.dPxFp_RfLrccb0xYNvIqV0lp4H-eeWcLzPkNKGaB9jA" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg3NjAzODkxLCJleHAiOjE3ODc2MDc0OTEsIm5iZiI6MTc4NzYwMzg5MSwianRpIjoiTmtrQWViR1I0WUc1eld3RiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.5HjJijbz2UnoKtui00-w7YQE11l98YSo38Q5OauxL9U" \
   -d '{"lat":2,"long":4}'
+  
+  
   
   curl -X POST "http://localhost:8080/api/v1/locations/driver_current" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg3NTkxMjc2LCJleHAiOjE3ODc1OTQ4NzYsIm5iZiI6MTc4NzU5MTI3NiwianRpIjoiYVpsYWdYbmlVME9QeU05cyIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.dPxFp_RfLrccb0xYNvIqV0lp4H-eeWcLzPkNKGaB9jA" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg3NjAzODkxLCJleHAiOjE3ODc2MDc0OTEsIm5iZiI6MTc4NzYwMzg5MSwianRpIjoiTmtrQWViR1I0WUc1eld3RiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.5HjJijbz2UnoKtui00-w7YQE11l98YSo38Q5OauxL9U" \
   -d '{"lat":2,"long":4}'

@@ -2,19 +2,22 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Redis; 
 
 class NearbyDriversService
 {
     private const AVAILABLE_DRIVERS_KEY = 'drivers:available:locations';
-    
+
     public function nearbyDrivers(
         float $longitude,
         float $latitude,
         float $radiusKm = 5,
         int $limit = 20,
     ): array {
-        return Redis::command('GEOSEARCH', [
+        $redis = Redis::connection()->client();
+
+        return $redis->rawCommand(
+            'GEOSEARCH',
             self::AVAILABLE_DRIVERS_KEY,
             'FROMLONLAT',
             $longitude,
@@ -26,6 +29,6 @@ class NearbyDriversService
             'COUNT',
             $limit,
             'WITHDIST',
-        ]);
+        );
     }
 }
