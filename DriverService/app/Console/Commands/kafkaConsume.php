@@ -33,8 +33,8 @@ class kafkaConsume extends Command
                 $this->info('Longitude: ' . $long);
 
                 $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
-                    $lat,
-                    $long,
+                    4,
+                    2,
                     5,
                     20
                 );

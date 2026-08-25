@@ -18,7 +18,7 @@ class NearbyDriversService
 
         return $redis->rawCommand(
             'GEOSEARCH',
-            self::AVAILABLE_DRIVERS_KEY,
+            'laravel-database-drivers:available:locations',
             'FROMLONLAT',
             $longitude,
             $latitude,
