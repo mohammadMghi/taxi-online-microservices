@@ -17,7 +17,7 @@ class LocationController extends Controller
 
         //send event location is verified to the driver serivce (kafka)
         Kafka::publish()
-            ->onTopic('x')
+            ->onTopic('ride-requested')
             ->withBodyKey('userId', $headers)
             ->withBodyKey('lat', $request->input('lat'))
             ->withBodyKey('long', $request->input('long'))

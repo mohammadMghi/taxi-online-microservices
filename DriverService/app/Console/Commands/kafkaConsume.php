@@ -21,8 +21,8 @@ class kafkaConsume extends Command
     {
         $this->info('Starting Kafka consumer...');
 
-        $consumer = Kafka::consumer(['x'])
-            ->withConsumerGroupId('test-group')
+        $consumer = Kafka::consumer(['ride-requested'])
+            ->withConsumerGroupId('driver-group')
             ->withHandler(function (ConsumerMessage $message) {
                 $this->info('MESSAGE RECEIVED');
 
@@ -33,13 +33,18 @@ class kafkaConsume extends Command
                 $this->info('Longitude: ' . $long);
 
                 $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
-                    4,
-                    2,
+                    $long,
+                    $lat,
                     5,
                     20
                 );
 
                 $this->info('Nearby Drivers: ' . json_encode($nearbyDrivers));
+
+                Kafka::publish()
+                    ->onTopic('ride-request-notification')
+                    ->withBodyKey('nearby_drivers', $nearbyDrivers)
+                    ->send();
 
                 // Log::info('Kafka message received', [
                 //     'body' => $message->getBody(),
