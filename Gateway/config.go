@@ -12,6 +12,7 @@ type Config struct {
 	LocationServiceURL       string
 	NotificationServiceURL   string
 	PaymentServiceURL        string
+	RideServiceURL           string
 }
 
 func LoadConfig() Config {
@@ -23,6 +24,7 @@ func LoadConfig() Config {
 		DriverServiceURL:       getEnv("DRIVER_SERVICE_URL", "http://localhost:8002"),
 		PaymentServiceURL:      getEnv("PAYMENT_SERVICE_URL", "http://localhost:8003"),
 		LocationServiceURL:     getEnv("LOCATION_SERVICE_URL", "http://localhost:8004"),
+		RideServiceURL:         getEnv("RIDE_SERVICE_URL", "http://localhost:8005"),
 	}
 }
 

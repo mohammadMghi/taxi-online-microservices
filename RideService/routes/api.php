@@ -8,5 +8,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-
-Route::post('/v1/locations/driver_current', [App\Http\Controllers\UpdateDriverLocationController::class, 'updateLocation']);
+Route::post('/v1/rides/take', [App\Http\Controllers\RideRequestController::class, 'handle']);

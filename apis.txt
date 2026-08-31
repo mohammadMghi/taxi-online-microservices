@@ -5,9 +5,9 @@ curl -X POST http://localhost:8080/api/v1/auth/signin   -H "Content-Type: applic
 
 
 
-curl -X POST "http://localhost:8080/api/v1/locations/validation" \
+curl -X POST "http://localhost:8080/api/v1/rides/take" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg3OTUwNTY3LCJleHAiOjE3ODc5NTQxNjcsIm5iZiI6MTc4Nzk1MDU2NywianRpIjoiNXVQNHVleUZIQTBRdDVUMSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.cNEPTc1MoHJyHakQN9UyjPGxCzZlTZiNk2PPRVq3i-Q" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4MjEwNzg0LCJleHAiOjE3ODgyMTQzODQsIm5iZiI6MTc4ODIxMDc4NCwianRpIjoiTllQZkVFY3l1WjFxRUlHQiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.jlszSnIgthoziWg-Qo1BLL2owzBdKzivOBtMTbcqvxo" \
   -d '{"lat":2,"long":4}'
   
   

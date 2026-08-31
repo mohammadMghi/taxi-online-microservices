@@ -16,6 +16,7 @@ type Routes struct {
 	locationProxy     http.Handler
 	notificationProxy http.Handler
 	paymentProxy      http.Handler
+	rideProxy         http.Handler
 }
 
 func NewRoutes(config Config) *Routes {
@@ -27,6 +28,7 @@ func NewRoutes(config Config) *Routes {
 		locationProxy:     NewProxy(config.LocationServiceURL),
 		notificationProxy: NewProxy(config.NotificationServiceURL),
 		paymentProxy:      NewProxy(config.PaymentServiceURL),
+		rideProxy:         NewProxy(config.RideServiceURL),
 	}
 }
 
@@ -41,6 +43,11 @@ func (r *Routes) Handler() http.Handler {
 	mux.Handle(
 		"/api/v1/users/",
 		AuthMiddleware(r.config.JWTSecret, r.userProxy),
+	)
+
+	mux.Handle(
+		"/api/v1/rides/",
+		AuthMiddleware(r.config.JWTSecret, r.rideProxy),
 	)
 
 	mux.Handle(

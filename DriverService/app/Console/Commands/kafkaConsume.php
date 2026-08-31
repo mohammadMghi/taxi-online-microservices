@@ -21,30 +21,35 @@ class kafkaConsume extends Command
     {
         $this->info('Starting Kafka consumer...');
 
-        $consumer = Kafka::consumer(['ride-requested'])
-            ->withConsumerGroupId('driver-group')
+        $consumer = Kafka::consumer(['nearby-drivers-found'])
+            ->withConsumerGroupId('driver-service-group')
             ->withHandler(function (ConsumerMessage $message) {
                 $this->info('MESSAGE RECEIVED');
 
-                $lat = json_encode($message->getBody()['lat']);
-                $long = json_encode($message->getBody()['long']);
- 
-                $this->info('Latitude: ' . $lat);
-                $this->info('Longitude: ' . $long);
+                $pickup_location = json_encode($message->getBody()['pickup_location']);
+                $pickup_lat = json_encode($message->getBody()['pickup_lat']);
+                $pickup_long = json_encode($message->getBody()['pickup_long']);
+                $dropoff_location = json_encode($message->getBody()['dropoff_location']);
+                $dropoff_lat = json_encode($message->getBody()['dropoff_lat']);
+                $dropoff_long = json_encode($message->getBody()['dropoff_long']);
 
-                $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
-                    $long,
-                    $lat,
-                    5,
-                    20
-                );
 
-                $this->info('Nearby Drivers: ' . json_encode($nearbyDrivers));
+                $this->info('Pickup Location: ' . $pickup_location);
+                $this->info('Dropoff Location: ' . $dropoff_location);
 
-                Kafka::publish()
-                    ->onTopic('ride-request-notification')
-                    ->withBodyKey('nearby_drivers', $nearbyDrivers)
-                    ->send();
+                // $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
+                //     $dropoff_location,
+                //     $pickup_location,
+                //     5,
+                //     20
+                // );
+
+                // $this->info('Nearby Drivers: ' . json_encode($nearbyDrivers));
+
+                // Kafka::publish()
+                //     ->onTopic('ride-request-notification')
+                //     ->withBodyKey('nearby_drivers', $nearbyDrivers)
+                //     ->send();
 
                 // Log::info('Kafka message received', [
                 //     'body' => $message->getBody(),
