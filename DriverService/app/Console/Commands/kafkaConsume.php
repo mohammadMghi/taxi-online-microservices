@@ -1,13 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
-
-use App\Services\NearbyDriversService;
-use EventHandler;
+ 
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Console\Command; 
 use Junges\Kafka\Contracts\ConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 
@@ -27,11 +24,11 @@ class kafkaConsume extends Command
                 $this->info('MESSAGE RECEIVED');
 
                 $pickup_location = json_encode($message->getBody()['pickup_location']);
-                $pickup_lat = json_encode($message->getBody()['pickup_lat']);
-                $pickup_long = json_encode($message->getBody()['pickup_long']);
                 $dropoff_location = json_encode($message->getBody()['dropoff_location']);
                 $dropoff_lat = json_encode($message->getBody()['dropoff_lat']);
-                $dropoff_long = json_encode($message->getBody()['dropoff_long']);
+                $dropoff_long = json_encode($message->getBody()['dropoff_lng']);
+                $pickup_lat = json_encode($message->getBody()['pickup_lat']);
+                $pickup_long = json_encode($message->getBody()['pickup_lng']);
 
 
                 $this->info('Pickup Location: ' . $pickup_location);

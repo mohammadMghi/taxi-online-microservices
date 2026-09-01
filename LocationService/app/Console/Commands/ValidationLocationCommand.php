@@ -38,6 +38,10 @@ class ValidationLocationCommand extends Command
                     ->withBodyKey('userId', $body['userId'])
                     ->withBodyKey('pickup_location', $pickupLocation)
                     ->withBodyKey('dropoff_location', $dropoffLocation)
+                    ->withBodyKey('dropoff_lat', $body['dropoff_lat'] ?? null)
+                    ->withBodyKey('dropoff_lng', $body['dropoff_lng'] ?? null)
+                    ->withBodyKey('pickup_lat', $body['pickup_lat'] ?? null)
+                    ->withBodyKey('pickup_lng', $body['pickup_lng'] ?? null)
                     ->send();
 
                 // Log the valid ride request
