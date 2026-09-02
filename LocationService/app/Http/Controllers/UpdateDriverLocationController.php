@@ -11,7 +11,7 @@ class UpdateDriverLocationController extends Controller
 
     public function updateLocation(Request $request)
     {
-        $driverId = $request->input('userId');
+        $driverId = $request->headers->get('X-User-ID');
         $lat = $request->input('lat');
         $long = $request->input('long');
  

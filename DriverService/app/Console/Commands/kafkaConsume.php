@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Console\Commands;
- 
+
+use App\Services\NearbyDriversService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command; 
@@ -34,26 +35,33 @@ class kafkaConsume extends Command
                 $this->info('Pickup Location: ' . $pickup_location);
                 $this->info('Dropoff Location: ' . $dropoff_location);
 
-                // $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
-                //     $dropoff_location,
-                //     $pickup_location,
-                //     5,
-                //     20
-                // );
+                $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
+                    $pickup_long,
+                    $pickup_lat,
+                    5,
+                    20
+                );
 
-                // $this->info('Nearby Drivers: ' . json_encode($nearbyDrivers));
+                foreach($nearbyDrivers as [$driver, $distance]) {
+                    $driverId = str_replace('driver:', '', $driver);    
 
-                // Kafka::publish()
-                //     ->onTopic('ride-request-notification')
-                //     ->withBodyKey('nearby_drivers', $nearbyDrivers)
-                //     ->send();
+                    if (!$driverId) {
+                        continue;
+                    }
 
-                // Log::info('Kafka message received', [
-                //     'body' => $message->getBody(),
-                //     'topic' => $message->getTopicName(),
-                //     'partition' => $message->getPartition(),
-                //     'offset' => $message->getOffset(),
-                // ]);
+                    $this->info("Driver ID: {$driverId}, Distance: {$distance}");
+
+                    Kafka::publish()
+                        ->onTopic('driver-notification')
+                        ->withBodyKey('driverId', $driverId)
+                        ->withBodyKey('pickup_location', $pickup_location)
+                        ->withBodyKey('dropoff_location', $dropoff_location)
+                        ->withBodyKey('dropoff_lat', $dropoff_lat)
+                        ->withBodyKey('dropoff_lng', $dropoff_long)
+                        ->withBodyKey('pickup_lat', $pickup_lat)
+                        ->withBodyKey('pickup_lng', $pickup_long)
+                        ->send();
+                }   
             })
             ->build();
 

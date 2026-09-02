@@ -7,31 +7,20 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Junges\Kafka\Facades\Kafka;
 
-#[Signature('kafka:ride-request-consume')]
+#[Signature('kafka:comsume-notification')]
 #[Description('Command description')]
 class RideRequestConsume extends Command
 {
     public function handle()
     {
-        Kafka::consumer(['ride-request-notification'])
-            ->withConsumerGroupId('ride-request-notification-group')
-            ->withHandler(function ($message) {
-
+        Kafka::consumer(['driver-notification'])
+            ->withConsumerGroupId('notification-service-group')
+            ->withHandler(function ($message) { 
                 // Get Kafka message body
                 $body = $message->getBody();
+ 
 
-                // Get nearby drivers
-                $nearbyDrivers = $body['nearby_drivers'] ?? [];
-
-                foreach ($nearbyDrivers as $driver) {
-
-                    $driverId = $driver[0];
-                    $distance = $driver[1];
-
-                    $this->info("Driver ID: {$driverId}");
-                    $this->info("Distance: {$distance}");
-                }
-
+                $this->info("Notification sent to driver: " . json_encode($body['driverId']));
             })
             ->build()
             ->consume();
