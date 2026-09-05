@@ -2,27 +2,58 @@
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-tmux new-session -d -s taxi
+SESSION="taxi"
 
-tmux rename-window -t taxi:0 "Gateway"
-tmux send-keys -t taxi:0 "cd $ROOT_DIR/Gateway && go run ." Enter
+tmux new-session -d -s "$SESSION"
 
-tmux new-window -t taxi -n "UserService"
-tmux send-keys -t taxi:"UserService" "cd $ROOT_DIR/UserService && php artisan serve --port=8000" Enter
+# Gateway
+tmux rename-window -t "$SESSION:0" "Gateway"
+tmux send-keys -t "$SESSION:0" \
+    "cd \"$ROOT_DIR/Gateway\" && go run ." Enter
 
-tmux new-window -t taxi -n "NotificationService"
-tmux send-keys -t taxi:"Notification" "cd $ROOT_DIR/NotificationService && php artisan serve --port=8001" Enter
+# User Service
+tmux new-window -t "$SESSION" -n "UserService"
+tmux send-keys -t "$SESSION:UserService" \
+    "cd \"$ROOT_DIR/UserService\" && php artisan serve --port=8000" Enter
 
-tmux new-window -t taxi -n "DriverService"
-tmux send-keys -t taxi:"Driver" "cd $ROOT_DIR/DriverService && php artisan serve --port=8002" Enter
+# Notification Service
+tmux new-window -t "$SESSION" -n "NotificationService"
+tmux send-keys -t "$SESSION:NotificationService" \
+    "cd \"$ROOT_DIR/NotificationService\" && php artisan serve --port=8001" Enter
 
-tmux new-window -t taxi -n "PaymentService"
-tmux send-keys -t taxi:"Payment" "cd $ROOT_DIR/PaymentSerivce && php artisan serve --port=8003" Enter
+# Driver Service
+tmux new-window -t "$SESSION" -n "DriverService"
+tmux send-keys -t "$SESSION:DriverService" \
+    "cd \"$ROOT_DIR/DriverService\" && php artisan serve --port=8002" Enter
 
-tmux new-window -t taxi -n "LocationService"
-tmux send-keys -t taxi:"Location" "cd $ROOT_DIR/LocationService && php artisan serve --port=8004" Enter
+# Payment Service
+tmux new-window -t "$SESSION" -n "PaymentService"
+tmux send-keys -t "$SESSION:PaymentService" \
+    "cd \"$ROOT_DIR/PaymentService\" && php artisan serve --port=8003" Enter
 
-tmux new-window -t taxi -n "RideService"
-tmux send-keys -t taxi:"Ride" "cd $ROOT_DIR/RideService && php artisan serve --port=8005" Enter
+# Location Service
+tmux new-window -t "$SESSION" -n "LocationService"
+tmux send-keys -t "$SESSION:LocationService" \
+    "cd \"$ROOT_DIR/LocationService\" && php artisan serve --port=8004" Enter
 
-tmux attach -t taxi
+# Ride Service
+tmux new-window -t "$SESSION" -n "RideService"
+tmux send-keys -t "$SESSION:RideService" \
+    "cd \"$ROOT_DIR/RideService\" && php artisan serve --port=8005" Enter
+
+# Driver Kafka Consumer
+tmux new-window -t "$SESSION" -n "DriverKafka"
+tmux send-keys -t "$SESSION:DriverKafka" \
+    "cd \"$ROOT_DIR/DriverService\" && php artisan kafka:consum" Enter
+
+# Location Kafka Consumer
+tmux new-window -t "$SESSION" -n "LocationKafka"
+tmux send-keys -t "$SESSION:LocationKafka" \
+    "cd \"$ROOT_DIR/LocationService\" && php artisan kafka:validation-location" Enter
+
+# Notification Kafka Consumer
+tmux new-window -t "$SESSION" -n "NotificationKafka"
+tmux send-keys -t "$SESSION:NotificationKafka" \
+    "cd \"$ROOT_DIR/NotificationService\" && php artisan kafka:comsume-notification" Enter
+
+tmux attach -t "$SESSION"
