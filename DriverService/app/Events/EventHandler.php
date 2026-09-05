@@ -7,9 +7,7 @@ use Junges\Kafka\Facades\Kafka;
 class EventHandler
 {
     public function handle(ConsumerMessage $message)
-    {
-         
+    { 
         
-     
     }
 }

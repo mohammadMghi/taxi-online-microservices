@@ -64,6 +64,13 @@ class RideRequestController extends Controller
         }
 
         $ride = Ride::findOrFail($id);
+        if ($ride->status !== 'pending') {
+            return response()->json([
+                'message' => 'Ride cannot be accepted as it is not in pending status.',
+            ], 400); 
+        }
+
+        $ride = Ride::findOrFail($id);
         $ride->status = 'accepted';
         $ride->driver_id = $driver_id;
         $ride->save();
@@ -83,8 +90,22 @@ class RideRequestController extends Controller
     public function reject(Request $request, $id)
     {
         $driver_id = $request->headers->get('X-User-ID');
+
+        $ride = Redis::sMembers("driver:{$driver_id}:notifications");
+
+        if (empty($ride)) {
+            return response()->json([
+                'message' => 'No ride request found for this driver.',
+            ], 404);
+        }
         
         $ride = Ride::findOrFail($id);
+        if ($ride->status !== 'pending') {
+            return response()->json([
+                'message' => 'Ride cannot be rejected as it is not in pending status.',
+            ], 400); 
+        }
+
         $ride->status = 'rejected';
         $ride->save();
 
