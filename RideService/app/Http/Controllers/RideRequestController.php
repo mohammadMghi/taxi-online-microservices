@@ -63,17 +63,21 @@ class RideRequestController extends Controller
             ], 404);
         }
 
-        $ride = Ride::findOrFail($id);
-        if ($ride->status !== 'pending') {
+        $updated = Ride::query()
+            ->where('id', $id)
+            ->where('status', 'pending')
+            ->whereNull('driver_id')
+            ->update([
+                'status' => 'accepted',
+                'driver_id' => $driver_id,
+            ]);
+
+        if ($updated === 0) {
             return response()->json([
-                'message' => 'Ride cannot be accepted as it is not in pending status.',
-            ], 400); 
+                'message' => 'Ride has already been accepted.',
+            ], 409);
         }
 
-        $ride = Ride::findOrFail($id);
-        $ride->status = 'accepted';
-        $ride->driver_id = $driver_id;
-        $ride->save();
 
         Kafka::publish()
             ->onTopic('ride-accepted')

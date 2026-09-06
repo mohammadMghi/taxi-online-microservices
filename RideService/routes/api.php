@@ -11,3 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::post('/v1/rides/take', [App\Http\Controllers\RideRequestController::class, 'handle']);
 Route::post('/v1/rides/{id}/accept', [App\Http\Controllers\RideRequestController::class, 'accept']);
 Route::post('/v1/rides/{id}/reject', [App\Http\Controllers\RideRequestController::class, 'reject']);
+
+
+Route::get('/v1/rides', [App\Http\Controllers\RideListController::class, 'index']);
