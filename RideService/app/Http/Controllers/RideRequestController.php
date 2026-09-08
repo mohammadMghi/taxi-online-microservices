@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ride;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Http\Request; 
 use Junges\Kafka\Facades\Kafka;
 
 class RideRequestController extends Controller
@@ -25,6 +24,7 @@ class RideRequestController extends Controller
         $ride = Ride::create([
             'user_id' => $user_id,
             'status' => 'pending',
+            'cost' => 10000,
             'pickup_location' => $request->input('pickup_location'),
             'dropoff_location' => $request->input('dropoff_location'),
             'dropoff_lat' => $request->input('dropoff_lat'),
@@ -37,6 +37,7 @@ class RideRequestController extends Controller
             ->onTopic('ride-requested')
             ->withBodyKey('rideId', $ride->id)
             ->withBodyKey('userId', $user_id)
+            ->withBodyKey('cost', $ride->cost)
             ->withBodyKey('pickup_location', $request->input('pickup_location'))
             ->withBodyKey('dropoff_location', $request->input('dropoff_location'))
             ->withBodyKey('dropoff_lat', $request->input('dropoff_lat'))
@@ -48,80 +49,6 @@ class RideRequestController extends Controller
         return response()->json([
             'message' => 'Ride request received successfully.',
             'data' => $validatedData,
-        ]);
-    }
-
-    public function accept(Request $request, $id)
-    {  
-        $driver_id = $request->headers->get('X-User-ID');
-
-        $ride = Redis::sMembers("driver:{$driver_id}:notifications");
-
-        if (empty($ride)) {
-            return response()->json([
-                'message' => 'No ride request found for this driver.',
-            ], 404);
-        }
-
-        $updated = Ride::query()
-            ->where('id', $id)
-            ->where('status', 'pending')
-            ->whereNull('driver_id')
-            ->update([
-                'status' => 'accepted',
-                'driver_id' => $driver_id,
-            ]);
-
-        if ($updated === 0) {
-            return response()->json([
-                'message' => 'Ride has already been accepted.',
-            ], 409);
-        }
-
-
-        Kafka::publish()
-            ->onTopic('ride-accepted')
-            ->withBodyKey('rideId', $ride->id)
-            ->withBodyKey('driverId', $driver_id)
-            ->send();
-
-        return response()->json([
-            'message' => 'Ride accepted successfully.',
-            'data' => $ride,
-        ]);
-    }
-
-    public function reject(Request $request, $id)
-    {
-        $driver_id = $request->headers->get('X-User-ID');
-
-        $ride = Redis::sMembers("driver:{$driver_id}:notifications");
-
-        if (empty($ride)) {
-            return response()->json([
-                'message' => 'No ride request found for this driver.',
-            ], 404);
-        }
-        
-        $ride = Ride::findOrFail($id);
-        if ($ride->status !== 'pending') {
-            return response()->json([
-                'message' => 'Ride cannot be rejected as it is not in pending status.',
-            ], 400); 
-        }
-
-        $ride->status = 'rejected';
-        $ride->save();
-
-        Kafka::publish()
-            ->onTopic('ride-rejected')
-            ->withBodyKey('rideId', $ride->id)
-            ->withBodyKey('driverId', $driver_id)
-            ->send();
-
-        return response()->json([
-            'message' => 'Ride rejected successfully.',
-            'data' => $ride,
         ]);
     }
 }

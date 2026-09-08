@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
     'user_id',
     'driver_id', 
     'status',
+    'cost',
     'pickup_location',
     'dropoff_location',
     'dropoff_lat',

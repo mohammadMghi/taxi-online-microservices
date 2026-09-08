@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Notification;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -29,8 +30,24 @@ class RideRequestConsume extends Command
                         'dropoff_lng' => $body['dropoff_lng'],
                         'pickup_lat' => $body['pickup_lat'],
                         'pickup_lng' => $body['pickup_lng'],
+                        'rideId' => $body['rideId'],
+                        'driver_id' => $body['driverId'],
+                        'user_id' => $body['userId'],
                     ])
                 );
+
+                $notification = new Notification();
+
+                $notification->pickup_location = $body['pickup_location'];
+                $notification->dropoff_location = $body['dropoff_location'];
+                $notification->pickup_lat = $body['pickup_lat'];
+                $notification->pickup_lng = $body['pickup_lng'];
+                $notification->dropoff_lat = $body['dropoff_lat'];
+                $notification->dropoff_lng = $body['dropoff_lng'];
+                $notification->user_id = (int)$body['userId'];
+                $notification->driver_id = $body['driverId'];
+                $notification->ride_request_id = $body['rideId'];
+                $notification->save();
 
                 $this->info("Notification sent to driver: " . json_encode($body['driverId']));
             })

@@ -8,5 +8,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-
-Route::post('/v1/locations/driver_current', [App\Http\Controllers\UpdateDriverLocationController::class, 'updateLocation']);
+Route::get('/v1/notifications', [App\Http\Controllers\GetNotificationListController::class, '__invoke']);

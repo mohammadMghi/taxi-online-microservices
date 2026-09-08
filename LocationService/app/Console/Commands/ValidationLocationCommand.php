@@ -26,6 +26,7 @@ class ValidationLocationCommand extends Command
                 // Get pickup and dropoff locations
                 $pickupLocation = $body['pickup_location'] ?? null;
                 $dropoffLocation = $body['dropoff_location'] ?? null;
+                $rideId = $body['rideId'] ?? null;
 
                 // Validate locations
                 if (!$pickupLocation || !$dropoffLocation) {
@@ -35,13 +36,15 @@ class ValidationLocationCommand extends Command
 
                 Kafka::publish()
                     ->onTopic('nearby-drivers-found')
-                    ->withBodyKey('userId', $body['userId'])
+                    ->withBodyKey('user_id', $body['userId'])
                     ->withBodyKey('pickup_location', $pickupLocation)
                     ->withBodyKey('dropoff_location', $dropoffLocation)
                     ->withBodyKey('dropoff_lat', $body['dropoff_lat'] ?? null)
+                    ->withBodyKey('cost', $body['cost'] ?? null)
                     ->withBodyKey('dropoff_lng', $body['dropoff_lng'] ?? null)
                     ->withBodyKey('pickup_lat', $body['pickup_lat'] ?? null)
                     ->withBodyKey('pickup_lng', $body['pickup_lng'] ?? null)
+                    ->withBodyKey('ride_id', $body['rideId'] ?? null)
                     ->send();
 
                 // Log the valid ride request

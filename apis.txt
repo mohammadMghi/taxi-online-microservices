@@ -6,7 +6,7 @@ curl -X POST http://localhost:8080/api/v1/auth/signin   -H "Content-Type: applic
  
   curl -X POST "http://localhost:8080/api/v1/rides/take" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4NjQwNjMyLCJleHAiOjE3ODg2NDQyMzIsIm5iZiI6MTc4ODY0MDYzMiwianRpIjoiM25ES0Joc2kzdlVWcTJLRiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.w0DyxGXW2mdUtuI0weN2tvb-kRSZrP2-Gvvk19O-Ttg" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4ODIyMDg1LCJleHAiOjE3ODg4MjU2ODUsIm5iZiI6MTc4ODgyMjA4NSwianRpIjoidVU5OW9tVWNWaW1LWUNUWiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.VmurlNED0O9miHJYSGOievW-jFGipjRybJ7BcJ8NNtM" \
   -d '{
     "pickup_location": "Tehran",
     "dropoff_location": "Tehran/example",
@@ -19,12 +19,12 @@ curl -X POST http://localhost:8080/api/v1/auth/signin   -H "Content-Type: applic
   
   curl -X POST "http://localhost:8080/api/v1/locations/driver_current" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4NjQwNjMyLCJleHAiOjE3ODg2NDQyMzIsIm5iZiI6MTc4ODY0MDYzMiwianRpIjoiM25ES0Joc2kzdlVWcTJLRiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.w0DyxGXW2mdUtuI0weN2tvb-kRSZrP2-Gvvk19O-Ttg" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4ODIyMDg1LCJleHAiOjE3ODg4MjU2ODUsIm5iZiI6MTc4ODgyMjA4NSwianRpIjoidVU5OW9tVWNWaW1LWUNUWiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.VmurlNED0O9miHJYSGOievW-jFGipjRybJ7BcJ8NNtM" \
   -d '{"lat":33,"long":34}'
   
   //Accept request by driver
 
   curl -X POST "http://localhost:8080/api/v1/rides/1/accept" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4NjQwNjMyLCJleHAiOjE3ODg2NDQyMzIsIm5iZiI6MTc4ODY0MDYzMiwianRpIjoiM25ES0Joc2kzdlVWcTJLRiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.w0DyxGXW2mdUtuI0weN2tvb-kRSZrP2-Gvvk19O-Ttg" 
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXBpL3YxL2F1dGgvc2lnbmluIiwiaWF0IjoxNzg4ODIyMDg1LCJleHAiOjE3ODg4MjU2ODUsIm5iZiI6MTc4ODgyMjA4NSwianRpIjoidVU5OW9tVWNWaW1LWUNUWiIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.VmurlNED0O9miHJYSGOievW-jFGipjRybJ7BcJ8NNtM" 
   

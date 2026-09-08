@@ -24,12 +24,15 @@ class kafkaConsume extends Command
             ->withHandler(function (ConsumerMessage $message) {
                 $this->info('MESSAGE RECEIVED');
 
+        
                 $pickup_location = json_encode($message->getBody()['pickup_location']);
                 $dropoff_location = json_encode($message->getBody()['dropoff_location']);
                 $dropoff_lat = json_encode($message->getBody()['dropoff_lat']);
                 $dropoff_long = json_encode($message->getBody()['dropoff_lng']);
                 $pickup_lat = json_encode($message->getBody()['pickup_lat']);
                 $pickup_long = json_encode($message->getBody()['pickup_lng']);
+                $user_id = json_encode($message->getBody()['user_id']);
+                $ride_id = json_encode($message->getBody()['ride_id']);
 
 
                 $this->info('Pickup Location: ' . $pickup_location);
@@ -54,12 +57,14 @@ class kafkaConsume extends Command
                     Kafka::publish()
                         ->onTopic('driver-notification')
                         ->withBodyKey('driverId', $driverId)
+                        ->withBodyKey('userId', $user_id)
                         ->withBodyKey('pickup_location', $pickup_location)
                         ->withBodyKey('dropoff_location', $dropoff_location)
                         ->withBodyKey('dropoff_lat', $dropoff_lat)
                         ->withBodyKey('dropoff_lng', $dropoff_long)
                         ->withBodyKey('pickup_lat', $pickup_lat)
                         ->withBodyKey('pickup_lng', $pickup_long)
+                        ->withBodyKey('rideId', $ride_id)
                         ->send();
                 }   
             })
