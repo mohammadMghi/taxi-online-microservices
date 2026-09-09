@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
+            $table->string('idempotency_id')->unique();
             $table->bigInteger('driver_id')->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->bigInteger('cost');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->integer('dropoff_lng')->nullable();
             $table->integer('pickup_lat')->nullable();
             $table->integer('pickup_lng')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

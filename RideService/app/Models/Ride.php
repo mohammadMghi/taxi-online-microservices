@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
     'user_id',
-    'driver_id', 
+    'idempotency_id',
+    'driver_id',  
     'status',
     'cost',
     'pickup_location',

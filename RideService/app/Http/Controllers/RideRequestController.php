@@ -17,9 +17,17 @@ class RideRequestController extends Controller
             'dropoff_lng' => 'required|integer',
             'pickup_lat' => 'required|integer',
             'pickup_lng' => 'required|integer',
+            'idempotency_id' => 'required|integer'
         ]);
  
         $user_id = $request->headers->get('X-User-ID');
+
+        if (Ride::where('idempotency_id' , $request->idempotency_id)->exists()) {
+            return response()->json([
+                'message' => 'Ride already sent.',
+                'data' => $validatedData,
+            ]);
+        }
 
         $ride = Ride::create([
             'user_id' => $user_id,
@@ -31,11 +39,13 @@ class RideRequestController extends Controller
             'dropoff_lng' => $request->input('dropoff_lng'),
             'pickup_lat' => $request->input('pickup_lat'),
             'pickup_lng' => $request->input('pickup_lng'),
+            'idempotency_id' => $request->input('idempotency_id'),
         ]);
  
         Kafka::publish()
             ->onTopic('ride-requested')
             ->withBodyKey('rideId', $ride->id)
+            ->withBodyKey('idempotency_id', $request->idempotency_id)
             ->withBodyKey('userId', $user_id)
             ->withBodyKey('cost', $ride->cost)
             ->withBodyKey('pickup_location', $request->input('pickup_location'))

@@ -56,9 +56,10 @@ tmux new-window -t "$SESSION" -n "NotificationKafka"
 tmux send-keys -t "$SESSION:NotificationKafka" \
     "cd \"$ROOT_DIR/NotificationService\" && php artisan kafka:comsume-notification" Enter
     
-# insufficient-balance consumer
+# insufficient-balance consumer    
 tmux new-window -t "$SESSION" -n "Consume:insufficient-balance"
-tmux send-keys -t "$SESSION:InsufficientBalance" \
-   "cd \"$ROOT_DIR/RideService\" && php artisan kafka:consume-insufficient-balance" Enter 
+tmux send-keys -t "$SESSION:NotificationKafka" \
+    "cd \"$ROOT_DIR/RideService\" && php artisan kafka:consume-insufficient-balance" Enter
+ 
 
 tmux attach -t "$SESSION"
