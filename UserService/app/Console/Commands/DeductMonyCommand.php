@@ -18,7 +18,7 @@ class DeductMonyCommand extends Command
     public function handle()
     {
         Kafka::consumer(['ride-completed'])
-            ->withConsumerGroupId('deduct-mony-command-group')
+            ->withConsumerGroupId('user-service-group')
             ->withHandler(function ($message) {
                 $body = $message->getBody();
                 

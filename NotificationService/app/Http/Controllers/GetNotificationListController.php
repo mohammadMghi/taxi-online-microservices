@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 class GetNotificationListController extends Controller
 {
     public function __invoke(Request $request)
-    {
-        $driver_id = $request->headers->get('X-User-ID');
-
+    { 
+        $driver_id = (int) $request->headers->get('X-User-ID');
+  
         if (!$driver_id) {
             return response()->json(['error' => 'Driver ID is required'], 400);
         }

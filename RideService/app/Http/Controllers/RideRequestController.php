@@ -20,8 +20,16 @@ class RideRequestController extends Controller
             'idempotency_id' => 'required|integer'
         ]);
  
-        $user_id = $request->headers->get('X-User-ID');
+        $user_id = $request->header('X-User-ID');
 
+        if (!ctype_digit((string) $user_id)) {
+            return response()->json([
+                'message' => 'Invalid X-User-ID'
+            ], 400);
+        }
+
+        $user_id = (int) $user_id;
+   
         if (Ride::where('idempotency_id' , $request->idempotency_id)->exists()) {
             return response()->json([
                 'message' => 'Ride already sent.',

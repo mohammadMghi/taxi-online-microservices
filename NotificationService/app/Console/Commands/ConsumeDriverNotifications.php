@@ -9,9 +9,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
 use Junges\Kafka\Facades\Kafka;
 
-#[Signature('kafka:comsume-notification')]
+#[Signature('kafka:consume-driver-notifications')]
 #[Description('Command description')]
-class RideRequestConsume extends Command
+class ConsumeDriverNotifications extends Command
 {
     public function handle()
     {
@@ -35,7 +35,7 @@ class RideRequestConsume extends Command
                         'user_id' => $body['userId'],
                     ])
                 );
-
+   
                 $notification = new Notification();
 
                 $notification->pickup_location = $body['pickup_location'];
@@ -44,9 +44,9 @@ class RideRequestConsume extends Command
                 $notification->pickup_lng = $body['pickup_lng'];
                 $notification->dropoff_lat = $body['dropoff_lat'];
                 $notification->dropoff_lng = $body['dropoff_lng'];
-                $notification->user_id = (int)$body['userId'];
-                $notification->driver_id = $body['driverId'];
-                $notification->ride_request_id = $body['rideId'];
+                $notification->user_id = (int) $body['userId'];
+                $notification->driver_id = (int) $body['driverId'];
+                $notification->ride_request_id = (int) $body['rideId'];
                 $notification->save();
 
                 $this->info("Notification sent to driver: " . json_encode($body['driverId']));

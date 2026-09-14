@@ -9,8 +9,8 @@ class RideCompletedController extends Controller
 {
     public function handle(Request $request, $id)
     {   
-        $driver_id = $request->headers->get('X-User-ID');
-
+        $driver_id = (int) $request->headers->get('X-User-ID');
+ 
         if (!\App\Models\Ride::where('id', $id)
                 ->where('status' , 'accepted')
                 ->where('driver_id', $driver_id)
@@ -20,6 +20,20 @@ class RideCompletedController extends Controller
                 'message' => 'You are not authorized to complete this ride.',
             ], 403);
         }
+
+        $ride = \App\Models\Ride::where('id', $id)
+            ->where('status', 'accepted')
+            ->where('driver_id', $driver_id)
+            ->first();
+            
+          Kafka::publish()
+            ->onTopic('ride-completed')
+            ->withBodyKey('userId', $ride->user_id)
+            ->withBodyKey('rideId', $id)
+            ->withBodyKey('driverId', $driver_id)
+            ->withBodyKey('status', 'completed')
+            ->withBodyKey('cost' , \App\Models\Ride::where('id', $id)->value('cost'))
+            ->send();
 
         $updated = \App\Models\Ride::where('id', $id)
             ->where('status', 'accepted')
@@ -32,15 +46,7 @@ class RideCompletedController extends Controller
             return response()->json([
                 'message' => 'Ride not found or already completed.',
             ], 404);
-        }
-
-        Kafka::publish()
-            ->onTopic('ride-completed')
-            ->withBodyKey('rideId', $id)
-            ->withBodyKey('driverId', $driver_id)
-            ->withBodyKey('status', 'completed')
-            ->withBodyKey('cost' , \App\Models\Ride::where('id', $id)->value('cost'))
-            ->send();
+        } 
 
         return response()->json([
             'message' => 'Ride completed successfully.',

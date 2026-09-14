@@ -9,9 +9,9 @@ use Illuminate\Console\Command;
 use Junges\Kafka\Contracts\ConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 
-#[Signature('kafka:consume')]
+#[Signature('kafka:consume-nearby-drivers')]
 #[Description('Command description')]
-class kafkaConsume extends Command
+class ConsumeNearbyDrivers extends Command
 {
     protected $signature = 'kafka:consume';
 
@@ -23,8 +23,7 @@ class kafkaConsume extends Command
             ->withConsumerGroupId('driver-service-group')
             ->withHandler(function (ConsumerMessage $message) {
                 $this->info('MESSAGE RECEIVED');
-
-        
+ 
                 $pickup_location = json_encode($message->getBody()['pickup_location']);
                 $dropoff_location = json_encode($message->getBody()['dropoff_location']);
                 $dropoff_lat = json_encode($message->getBody()['dropoff_lat']);
@@ -47,7 +46,7 @@ class kafkaConsume extends Command
 
                 foreach($nearbyDrivers as [$driver, $distance]) {
                     $driverId = str_replace('driver:', '', $driver);    
-
+                    
                     if (!$driverId) {
                         continue;
                     }
@@ -71,17 +70,7 @@ class kafkaConsume extends Command
             ->build();
 
         $this->info('Consumer started. Waiting for messages...');
-
-        //find near by drivers
-        // $nearbyDrivers = app(NearbyDriversService::class)->nearbyDrivers(
-        //     51.5074, // Example longitude
-        //     -0.1278, // Example latitude
-        //     5,       // Radius in kilometers
-        //     20       // Limit of results
-        // );
-
-        //call notification service to send notification to nearby drivers
-
+ 
         $consumer->consume();
     }
 }

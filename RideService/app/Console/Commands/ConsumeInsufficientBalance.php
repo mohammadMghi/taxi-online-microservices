@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Invoice;
+use App\Models\Ride;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -21,23 +23,26 @@ class ConsumeInsufficientBalance extends Command
             ->withHandler(function ($message) {
                 $body = $message->getBody();
                 
-                $userId = $body['userId'] ?? null;
-                $rideId = $body['rideId'] ?? null;
+                $userId = (int) $body['userId'] ?? null;
+                $rideId = (int) $body['rideId'] ?? null; 
+                $cost = $body['cost'] ?? null;
 
-                $amount = $body['amount'] ?? null;
-
-                if (!$userId || !$rideId || !$amount) {
-                    $this->error('Invalid insufficient balance message: Missing userId or rideId or amount.');
+                if (!$userId || !$rideId || !$cost) {
+                    $this->error('Invalid insufficient balance message: Missing userId or rideId or cost.');
                     return;
                 } 
 
-                $invoice = \App\Models\Invoice::where('ride_id', $rideId)->first();
+                $ride = Ride::find($rideId);
+
+                $invoice = new Invoice();
 
                 $invoice->ride_id = $rideId;
 
+                $invoice->driver_id = $ride->driver_id;
+
                 $invoice->user_id = $userId;
 
-                $invoice->amount = $amount;
+                $invoice->amount = $cost;
 
                 $invoice->status = 'not-paid';
 
