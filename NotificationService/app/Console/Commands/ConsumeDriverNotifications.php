@@ -18,8 +18,16 @@ class ConsumeDriverNotifications extends Command
         Kafka::consumer(['driver-notification'])
             ->withConsumerGroupId('notification-service-group')
             ->withHandler(function ($message) { 
+
                 // Get Kafka message body
                 $body = $message->getBody();
+
+
+                $this->info('MESSAGE RECEIVED');
+
+                $body = $message->getBody();
+
+                $this->info(json_encode($body));
 
                 Redis::sAdd(
                     "driver:{$body['driverId']}:notifications",

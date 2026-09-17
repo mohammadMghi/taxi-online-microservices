@@ -12,8 +12,7 @@ use Junges\Kafka\Facades\Kafka;
 #[Signature('kafka:consume-nearby-drivers')]
 #[Description('Command description')]
 class ConsumeNearbyDrivers extends Command
-{
-    protected $signature = 'kafka:consume';
+{ 
 
     public function handle(): void
     {
@@ -44,7 +43,14 @@ class ConsumeNearbyDrivers extends Command
                     20
                 );
 
+                $this->info("NearbyDrivers: {$nearbyDrivers}");
+
                 foreach($nearbyDrivers as [$driver, $distance]) {
+
+                    $this->info("foreach");
+                    
+                    $this->info("foreach driver: {$driver} distance: {$distance}");
+
                     $driverId = str_replace('driver:', '', $driver);    
                     
                     if (!$driverId) {

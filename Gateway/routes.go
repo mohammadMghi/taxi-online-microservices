@@ -1,7 +1,8 @@
 // routes.go
 package main
 
-import ( 
+import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -87,35 +88,37 @@ type Claims struct {
 
 func AuthMiddleware(secret string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString, err := extractBearerToken(r)
 
+		log.Printf("AUTH: %s %s", r.Method, r.URL.Path)
+
+		tokenString, err := extractBearerToken(r)
 		if err != nil {
+			log.Printf("AUTH: bearer error: %v", err)
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		log.Printf("AUTH: bearer token received")
 
 		claims, err := validateJWT(tokenString, secret)
-
 		if err != nil {
+			log.Printf("AUTH: JWT validation failed: %v", err)
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		/*
-			Do not trust these headers from the client.
+		log.Printf("AUTH: JWT valid, user=%s role=%s", claims.UserID, claims.Role)
 
-			The Gateway removes them and creates them from
-			the verified JWT instead.
-		*/
 		r.Header.Del("X-User-ID")
 		r.Header.Del("X-User-Role")
-	 
+
 		r.Header.Set("X-User-ID", claims.UserID)
 		r.Header.Set("X-User-Role", claims.Role)
 
 		next.ServeHTTP(w, r)
 	})
 }
+ 
 
 func extractBearerToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")

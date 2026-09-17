@@ -1,72 +1,115 @@
 services:
+
+  # =========================
+  # Infrastructure
+  # =========================
+
   mysql:
     image: mysql:8.0
     container_name: taxi-mysql
     restart: unless-stopped
+
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_ROOT_HOST: '%'
-    # ports:
-    #   - "3306:3306"
+      MYSQL_ROOT_HOST: "%"
+
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
+
     networks:
       - taxi-network
+
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+
   redis:
     image: redis:7-alpine
     container_name: taxi-redis
     restart: unless-stopped
+
     volumes:
       - redis_data:/data
+
     networks:
       - taxi-network
+
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: taxi-kafka
     restart: unless-stopped
+
     ports:
       - "9092:9092"
+
     environment:
       KAFKA_NODE_ID: 1
+
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
       KAFKA_PROCESS_ROLES: broker,controller
+
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093
+
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
     networks:
       - taxi-network
+
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9092"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+
+  # =========================
+  # User Service
+  # =========================
+
   user-service:
     build:
       context: ./UserService
       dockerfile: Dockerfile
+
     container_name: taxi-user-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -74,24 +117,70 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./UserService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+      JWT_SECRET: pfRCM8fiirKHFhi0SRVgVeParjCho0Ke8mMnvbzBzMBtlidpVYxhVyM0owchFVqk
+      JWT_ALGO: HS256
+
     ports:
       - "8000:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  user-kafka-consumer:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+
+    container_name: taxi-user-kafka-consumer
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    env_file:
+      - ./UserService/.env
+
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      KAFKA_BROKERS: kafka:9092
+
+    networks:
+      - taxi-network
+
+    command: php artisan kafka:deduct-mony-command
+
+
+  # =========================
+  # Driver Service
+  # =========================
 
   driver-service:
     build:
       context: ./DriverService
       dockerfile: Dockerfile
+
     container_name: taxi-driver-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -99,24 +188,68 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./DriverService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
     ports:
       - "8001:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  driver-kafka-consumer:
+    build:
+      context: ./DriverService
+      dockerfile: Dockerfile
+
+    container_name: taxi-driver-kafka-consumer
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    env_file:
+      - ./DriverService/.env
+
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      KAFKA_BROKERS: kafka:9092
+
+    networks:
+      - taxi-network
+
+    command: php artisan kafka:consume-nearby-drivers
+
+
+  # =========================
+  # Location Service
+  # =========================
 
   location-service:
     build:
       context: ./LocationService
       dockerfile: Dockerfile
+
     container_name: taxi-location-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -124,24 +257,68 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./LocationService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
     ports:
       - "8002:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  location-kafka-consumer:
+    build:
+      context: ./LocationService
+      dockerfile: Dockerfile
+
+    container_name: taxi-location-kafka-consumer
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    env_file:
+      - ./LocationService/.env
+
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      KAFKA_BROKERS: kafka:9092
+
+    networks:
+      - taxi-network
+
+    command: php artisan kafka:validation-location
+
+
+  # =========================
+  # Ride Service
+  # =========================
 
   ride-service:
     build:
       context: ./RideService
       dockerfile: Dockerfile
+
     container_name: taxi-ride-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -149,24 +326,68 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./RideService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
     ports:
       - "8003:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  ride-kafka-consumer:
+    build:
+      context: ./RideService
+      dockerfile: Dockerfile
+
+    container_name: taxi-ride-kafka-consumer
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    env_file:
+      - ./RideService/.env
+
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      KAFKA_BROKERS: kafka:9092
+
+    networks:
+      - taxi-network
+
+    command: php artisan kafka:consume-insufficient-balance
+
+
+  # =========================
+  # Notification Service
+  # =========================
 
   notification-service:
     build:
       context: ./NotificationService
       dockerfile: Dockerfile
+
     container_name: taxi-notification-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -174,24 +395,68 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./NotificationService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
     ports:
       - "8004:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  notification-kafka-consumer:
+    build:
+      context: ./NotificationService
+      dockerfile: Dockerfile
+
+    container_name: taxi-notification-kafka-consumer
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+    env_file:
+      - ./NotificationService/.env
+
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      KAFKA_BROKERS: kafka:9092
+
+    networks:
+      - taxi-network
+
+    command: php artisan kafka:consume-driver-notifications
+
+
+  # =========================
+  # Payment Service
+  # =========================
 
   payment-service:
     build:
       context: ./PaymentService
       dockerfile: Dockerfile
+
     container_name: taxi-payment-service
     restart: unless-stopped
+
     depends_on:
       mysql:
         condition: service_healthy
@@ -199,24 +464,38 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+
     env_file:
       - ./PaymentService/.env
+
     environment:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
     ports:
       - "8005:8000"
+
     networks:
       - taxi-network
-    command: sh -c "php artisan migrate --force && php -S 0.0.0.0:8000"
+
+    command: >
+      sh -c "php artisan migrate --force &&
+      php -S 0.0.0.0:8000 -t public"
+
+
+  # =========================
+  # API Gateway
+  # =========================
 
   gateway:
     build:
       context: ./Gateway
       dockerfile: Dockerfile
+
     container_name: taxi-gateway
     restart: unless-stopped
+
     depends_on:
       - user-service
       - driver-service
@@ -224,22 +503,36 @@ services:
       - ride-service
       - notification-service
       - payment-service
+
     environment:
-      JWT_SECRET: your-secret-key
+      JWT_SECRET: "pfRCM8fiirKHFhi0SRVgVeParjCho0Ke8mMnvbzBzMBtlidpVYxhVyM0owchFVqk"
+
       USER_SERVICE_URL: http://user-service:8000
       DRIVER_SERVICE_URL: http://driver-service:8000
       LOCATION_SERVICE_URL: http://location-service:8000
       RIDE_SERVICE_URL: http://ride-service:8000
       NOTIFICATION_SERVICE_URL: http://notification-service:8000
       PAYMENT_SERVICE_URL: http://payment-service:8000
+
     ports:
       - "8080:8080"
+
     networks:
       - taxi-network
+
+
+# =========================
+# Network
+# =========================
 
 networks:
   taxi-network:
     driver: bridge
+
+
+# =========================
+# Volumes
+# =========================
 
 volumes:
   mysql_data:
