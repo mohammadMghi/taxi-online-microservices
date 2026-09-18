@@ -31,6 +31,7 @@ class ConsumeNearbyDrivers extends Command
                 $pickup_long = json_encode($message->getBody()['pickup_lng']);
                 $user_id = json_encode($message->getBody()['user_id']);
                 $ride_id = json_encode($message->getBody()['ride_id']);
+                $request_id = json_encode($message->getBody()['request_id']);
 
 
                 $this->info('Pickup Location: ' . $pickup_location);
@@ -48,7 +49,7 @@ class ConsumeNearbyDrivers extends Command
                 foreach($nearbyDrivers as [$driver, $distance]) {
 
                     $this->info("foreach");
-                    
+
                     $this->info("foreach driver: {$driver} distance: {$distance}");
 
                     $driverId = str_replace('driver:', '', $driver);    
@@ -70,6 +71,7 @@ class ConsumeNearbyDrivers extends Command
                         ->withBodyKey('pickup_lat', $pickup_lat)
                         ->withBodyKey('pickup_lng', $pickup_long)
                         ->withBodyKey('rideId', $ride_id)
+                        ->withBodyKey('request_id', $request_id)
                         ->send();
                 }   
             })

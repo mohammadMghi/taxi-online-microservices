@@ -21,12 +21,14 @@ class RideRequestController extends Controller
         ]);
  
         $user_id = $request->header('X-User-ID');
+        $request_id = $request->header('X-Request-ID');
 
         if (!ctype_digit((string) $user_id)) {
             return response()->json([
                 'message' => 'Invalid X-User-ID'
             ], 400);
         }
+        
 
         $user_id = (int) $user_id;
    
@@ -48,6 +50,7 @@ class RideRequestController extends Controller
             'pickup_lat' => $request->input('pickup_lat'),
             'pickup_lng' => $request->input('pickup_lng'),
             'idempotency_id' => $request->input('idempotency_id'),
+            'request_id' => $request_id,
         ]);
  
         Kafka::publish()
@@ -62,6 +65,7 @@ class RideRequestController extends Controller
             ->withBodyKey('dropoff_lng', $request->input('dropoff_lng'))
             ->withBodyKey('pickup_lat', $request->input('pickup_lat'))
             ->withBodyKey('pickup_lng', $request->input('pickup_lng'))
+            ->withBodyKey('request_id', $request_id)
             ->send();
  
         return response()->json([

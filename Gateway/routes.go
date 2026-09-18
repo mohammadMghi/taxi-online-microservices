@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"uuid"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -118,7 +119,7 @@ func AuthMiddleware(secret string, next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
- 
+  
 
 func extractBearerToken(r *http.Request) (string, error) {
 	header := r.Header.Get("Authorization")
@@ -175,5 +176,5 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 }
 
 func generateRequestID() string {
-	return "request-id"
+	return uuid.NewString()
 }

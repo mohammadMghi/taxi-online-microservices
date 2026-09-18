@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('dropoff_lng')->nullable();
             $table->integer('pickup_lat')->nullable();
             $table->integer('pickup_lng')->nullable();
+            $table->string("request_id");
             $table->string('status')->default('pending');
             $table->timestamps();
         });
