@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('drivers', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->bigIncrements('driver_id');
-            $table->bigIncrements('request_id');
+            $table->string('request_id');
+            $table->string('pickup_location');
+            $table->string('dropoff_location');
+            $table->integer('dropoff_lng');
+            $table->integer('dropoff_lat');
+            $table->integer('pickup_lat');
+            $table->integer('pickup_lng');
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drivers');
+        Schema::dropIfExists('locations');
     }
 };

@@ -42,13 +42,7 @@ class RideRequestController extends Controller
         $ride = Ride::create([
             'user_id' => $user_id,
             'status' => 'pending',
-            'cost' => 10000,
-            'pickup_location' => $request->input('pickup_location'),
-            'dropoff_location' => $request->input('dropoff_location'),
-            'dropoff_lat' => $request->input('dropoff_lat'),
-            'dropoff_lng' => $request->input('dropoff_lng'),
-            'pickup_lat' => $request->input('pickup_lat'),
-            'pickup_lng' => $request->input('pickup_lng'),
+            'cost' => 10000, 
             'idempotency_id' => $request->input('idempotency_id'),
             'request_id' => $request_id,
         ]);

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
-
+ 
 use App\Services\NearbyDriversService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;

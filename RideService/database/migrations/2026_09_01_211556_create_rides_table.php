@@ -16,13 +16,7 @@ return new class extends Migration
             $table->string('idempotency_id')->unique();
             $table->bigInteger('driver_id')->nullable();
             $table->bigInteger('user_id')->nullable();
-            $table->bigInteger('cost');
-            $table->string('pickup_location');
-            $table->string('dropoff_location');
-            $table->integer('dropoff_lat')->nullable();
-            $table->integer('dropoff_lng')->nullable();
-            $table->integer('pickup_lat')->nullable();
-            $table->integer('pickup_lng')->nullable();
+            $table->bigInteger('cost'); 
             $table->string("request_id");
             $table->string('status')->default('pending');
             $table->timestamps();
