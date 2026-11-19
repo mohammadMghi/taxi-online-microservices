@@ -44,8 +44,6 @@ class ConsumeNearbyDrivers extends Command
                     20
                 );
 
-                $this->info("NearbyDrivers: {$nearbyDrivers}");
-
                 foreach($nearbyDrivers as [$driver, $distance]) {
 
                     $this->info("foreach");

@@ -11,7 +11,19 @@ SERVICES=(
     "payment-service"
 )
 
-echo "🚀 Starting migrate:fresh..."
+echo "🐳 Building all services..."
+docker compose build --no-cache
+
+echo ""
+echo "🚀 Starting all services..."
+docker compose up -d
+
+echo ""
+echo "⏳ Waiting for services to start..."
+sleep 10
+
+echo ""
+echo "🗄️ Starting migrate:fresh..."
 
 for SERVICE in "${SERVICES[@]}"; do
     echo ""
@@ -24,5 +36,5 @@ done
 
 echo ""
 echo "========================================"
-echo "✅ All databases migrated successfully!"
+echo "✅ All services built, started and migrated successfully!"
 echo "========================================"

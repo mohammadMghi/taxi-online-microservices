@@ -15,13 +15,12 @@ class ConsumeDriverNotifications extends Command
 {
     public function handle()
     {
+        $this->info('start...');
         Kafka::consumer(['driver-notification'])
             ->withConsumerGroupId('notification-service-group')
             ->withHandler(function ($message) { 
-
                 // Get Kafka message body
                 $body = $message->getBody();
-
 
                 $this->info('MESSAGE RECEIVED');
 
@@ -43,7 +42,9 @@ class ConsumeDriverNotifications extends Command
                         'user_id' => $body['userId'],
                     ])
                 );
-   
+
+                $this->info('hereeee');
+
                 $notification = new Notification();
 
                 $notification->pickup_location = $body['pickup_location'];

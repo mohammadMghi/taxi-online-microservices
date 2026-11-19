@@ -131,6 +131,10 @@ services:
     ports:
       - "8000:8000"
 
+    volumes:
+      - ./UserService:/var/www
+      - user_vendor:/var/www/vendor
+
     networks:
       - taxi-network
 
@@ -162,6 +166,10 @@ services:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
+    volumes:
+      - ./UserService:/var/www
+      - user_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -200,6 +208,10 @@ services:
     ports:
       - "8001:8000"
 
+    volumes:
+      - ./DriverService:/var/www
+      - driver_vendor:/var/www/vendor
+
     networks:
       - taxi-network
 
@@ -231,6 +243,10 @@ services:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
+    volumes:
+      - ./DriverService:/var/www
+      - driver_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -269,6 +285,10 @@ services:
     ports:
       - "8002:8000"
 
+    volumes:
+      - ./LocationService:/var/www
+      - location_vendor:/var/www/vendor
+
     networks:
       - taxi-network
 
@@ -300,6 +320,10 @@ services:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
+    volumes:
+      - ./LocationService:/var/www
+      - location_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -338,6 +362,10 @@ services:
     ports:
       - "8003:8000"
 
+    volumes:
+      - ./RideService:/var/www
+      - ride_vendor:/var/www/vendor
+
     networks:
       - taxi-network
 
@@ -369,6 +397,10 @@ services:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
+    volumes:
+      - ./RideService:/var/www
+      - ride_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -407,6 +439,10 @@ services:
     ports:
       - "8004:8000"
 
+    volumes:
+      - ./NotificationService:/var/www
+      - notification_vendor:/var/www/vendor
+
     networks:
       - taxi-network
 
@@ -438,6 +474,10 @@ services:
       DB_HOST: mysql
       REDIS_HOST: redis
       KAFKA_BROKERS: kafka:9092
+
+    volumes:
+      - ./NotificationService:/var/www
+      - notification_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -475,6 +515,10 @@ services:
 
     ports:
       - "8005:8000"
+
+    volumes:
+      - ./PaymentService:/var/www
+      - payment_vendor:/var/www/vendor
 
     networks:
       - taxi-network
@@ -517,6 +561,29 @@ services:
     ports:
       - "8080:8080"
 
+    volumes:
+      - ./Gateway:/var/www
+
+    networks:
+      - taxi-network
+
+
+  # =========================
+  # Adminer
+  # =========================
+
+  adminer:
+    image: adminer:latest
+    container_name: taxi-adminer
+    restart: unless-stopped
+
+    ports:
+      - "8081:8080"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
     networks:
       - taxi-network
 
@@ -537,3 +604,10 @@ networks:
 volumes:
   mysql_data:
   redis_data:
+
+  user_vendor:
+  driver_vendor:
+  location_vendor:
+  ride_vendor:
+  notification_vendor:
+  payment_vendor:

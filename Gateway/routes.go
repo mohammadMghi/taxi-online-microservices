@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"uuid"
+	"github.com/google/uuid"
 
 	"github.com/golang-jwt/jwt/v5"
 )

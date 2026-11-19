@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OutboxMessage;
 use App\Models\Ride;
+use Exception;
 use Illuminate\Http\Request; 
 use Junges\Kafka\Facades\Kafka;
 
@@ -46,22 +48,49 @@ class RideRequestController extends Controller
             'idempotency_id' => $request->input('idempotency_id'),
             'request_id' => $request_id,
         ]);
- 
-        Kafka::publish()
-            ->onTopic('ride-requested')
-            ->withBodyKey('rideId', $ride->id)
-            ->withBodyKey('idempotency_id', $request->idempotency_id)
-            ->withBodyKey('userId', $user_id)
-            ->withBodyKey('cost', $ride->cost)
-            ->withBodyKey('pickup_location', $request->input('pickup_location'))
-            ->withBodyKey('dropoff_location', $request->input('dropoff_location'))
-            ->withBodyKey('dropoff_lat', $request->input('dropoff_lat'))
-            ->withBodyKey('dropoff_lng', $request->input('dropoff_lng'))
-            ->withBodyKey('pickup_lat', $request->input('pickup_lat'))
-            ->withBodyKey('pickup_lng', $request->input('pickup_lng'))
-            ->withBodyKey('request_id', $request_id)
-            ->send();
- 
+    
+        $outboxMessage = new OutboxMessage();
+
+        try {
+
+            Kafka::publish()
+                ->onTopic('ride-requested')
+                ->withBodyKey('rideId', $ride->id)
+                ->withBodyKey('idempotency_id', $request->idempotency_id)
+                ->withBodyKey('userId', $user_id)
+                ->withBodyKey('cost', $ride->cost)
+                ->withBodyKey('pickup_location', $request->input('pickup_location'))
+                ->withBodyKey('dropoff_location', $request->input('dropoff_location'))
+                ->withBodyKey('dropoff_lat', $request->input('dropoff_lat'))
+                ->withBodyKey('dropoff_lng', $request->input('dropoff_lng'))
+                ->withBodyKey('pickup_lat', $request->input('pickup_lat'))
+                ->withBodyKey('pickup_lng', $request->input('pickup_lng'))
+                ->withBodyKey('request_id', $request_id)
+                ->send();
+
+            $message = [
+                'rideId' => $ride->id,
+                'idempotency_id' => $ride->idempotency_id,
+                'userId' => $ride->userId,
+                'cost' => $ride->cost,
+                'pickup_location' => $ride->pickup_location,
+                'dropoff_location' => $ride->dropoff_location,
+                'dropoff_lat' => $ride->dropoff_lat,
+                'dropoff_lng' => $ride->dropoff_lng,
+                'pickup_lat' => $ride->pickup_lat,
+                'pickup_lng' => $ride->pickup_lng,
+                'request_id' => $ride->request_id,
+            ];
+
+            $outboxMessage->save([
+                ''
+            ]);
+    
+
+        }catch (Exception $e) {
+
+        }
+
         return response()->json([
             'message' => 'Ride request received successfully.',
             'data' => $validatedData,
